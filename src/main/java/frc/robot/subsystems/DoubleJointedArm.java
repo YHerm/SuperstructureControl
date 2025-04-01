@@ -55,7 +55,7 @@ public class DoubleJointedArm extends GBSubsystem {
 	}
 
 	public void setPosition(Translation2d positionMeters, boolean firstJointLeft) {
-		double distanceMeters = positionMeters.getDistance(new Translation2d());
+		double distanceMeters = positionMeters.getNorm();
 
 		double alphaRads = Math.atan2(positionMeters.getY(), positionMeters.getX());
 		double omegaRads = Math.acos((distanceMeters * FIRST_JOINT_PERCENT_FROM_ARM) / FIRST_JOINT_LENGTH_METERS);
