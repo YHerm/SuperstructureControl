@@ -24,6 +24,7 @@ public class Robot {
 
 	private final DoubleJointedArm arm = new DoubleJointedArm("Arm");
 	private final DoubleJointedArmVisualizer armVisualizer = new DoubleJointedArmVisualizer(
+		"",
 		2.5,
 		2.5,
 		DoubleJointedArm.FIRST_JOINT_LENGTH_METERS,
