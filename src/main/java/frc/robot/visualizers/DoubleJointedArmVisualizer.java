@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class DoubleJointedArmVisualizer {
 
-	private static final MechanismLigament2d TARGET_POSITION_MARK = new MechanismLigament2d("mark", 0.03, 0, 10.0F, new Color8Bit(Color.kGreen));
+	private static final MechanismLigament2d TARGET_POSITION_MARK = new MechanismLigament2d("mark", 0.01, 0, 10.0F, new Color8Bit(Color.kGreen));
 	private static final double DEFAULT_LINE_WIDTH = 10.0F;
 
 	private final Translation2d armRootPosition;
