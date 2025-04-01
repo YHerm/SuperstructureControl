@@ -40,6 +40,7 @@ public class Robot {
 		BusChain.logChainsStatuses();
 
 		armVisualizer.setAngles(arm.getFirstJointAngle(), arm.getSecondJointAngle());
+		armVisualizer.setTargetPositionMeters(arm.getPositionMeters());
 
 		CommandScheduler.getInstance().run(); // Should be last
 	}

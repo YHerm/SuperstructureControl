@@ -25,6 +25,7 @@ public class JoysticksBindings {
 	private static void mainJoystickButtons(Robot robot) {
 		SmartJoystick usedJoystick = MAIN_JOYSTICK;
 		// bindings...
+		robot.getArm().applyTestBinds(usedJoystick);
 	}
 
 	private static void secondJoystickButtons(Robot robot) {
