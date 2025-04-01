@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.joysticks.SmartJoystick;
 import org.littletonrobotics.junction.Logger;
 
 public class DoubleJointedArm extends GBSubsystem {
@@ -40,6 +42,13 @@ public class DoubleJointedArm extends GBSubsystem {
 	public void setAngles(Rotation2d a1, Rotation2d a2) {
 		setFirstJointAngle(a1);
 		setSecondJointAngle(a2);
+	}
+
+	public void applyTestBinds(SmartJoystick joystick) {
+		joystick.A.onTrue(new InstantCommand(() -> setAngles(Rotation2d.fromDegrees(100), Rotation2d.fromDegrees(210))));
+		joystick.B.onTrue(new InstantCommand(() -> setAngles(Rotation2d.fromDegrees(60), Rotation2d.fromDegrees(80))));
+		joystick.X.onTrue(new InstantCommand(() -> setAngles(Rotation2d.fromDegrees(150), Rotation2d.fromDegrees(75))));
+		joystick.Y.onTrue(new InstantCommand(() -> setAngles(Rotation2d.fromDegrees(95), Rotation2d.fromDegrees(85))));
 	}
 
 }
