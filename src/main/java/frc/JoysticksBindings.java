@@ -28,14 +28,10 @@ public class JoysticksBindings {
 		SmartJoystick usedJoystick = MAIN_JOYSTICK;
 		// bindings...
 
-		usedJoystick.A.onTrue(new InstantCommand(() -> robot.getArm().setAngles(Rotation2d.fromDegrees(100),
-			Rotation2d.fromDegrees(210))));
-		usedJoystick.B.onTrue(new InstantCommand(() -> robot.getArm().setAngles(Rotation2d.fromDegrees(60),
-			Rotation2d.fromDegrees(80))));
-		usedJoystick.X.onTrue(new InstantCommand(() -> robot.getArm().setAngles(Rotation2d.fromDegrees(150),
-			Rotation2d.fromDegrees(75))));
-		usedJoystick.Y.onTrue(new InstantCommand(() -> robot.getArm().setAngles(Rotation2d.fromDegrees(95),
-			Rotation2d.fromDegrees(85))));
+		usedJoystick.A.onTrue(new InstantCommand(() -> robot.getArm().setAngles(Rotation2d.fromDegrees(100), Rotation2d.fromDegrees(210))));
+		usedJoystick.B.onTrue(new InstantCommand(() -> robot.getArm().setAngles(Rotation2d.fromDegrees(60), Rotation2d.fromDegrees(80))));
+		usedJoystick.X.onTrue(new InstantCommand(() -> robot.getArm().setAngles(Rotation2d.fromDegrees(150), Rotation2d.fromDegrees(75))));
+		usedJoystick.Y.onTrue(new InstantCommand(() -> robot.getArm().setAngles(Rotation2d.fromDegrees(95), Rotation2d.fromDegrees(85))));
 	}
 
 	private static void secondJoystickButtons(Robot robot) {
