@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.joysticks.SmartJoystick;
 import org.littletonrobotics.junction.Logger;
@@ -21,6 +22,7 @@ public class DoubleJointedArm extends GBSubsystem {
 	protected void subsystemPeriodic() {
 		Logger.recordOutput(getLogPath() + "/FirstJointAngleDeg", firstJointAngle.getDegrees());
 		Logger.recordOutput(getLogPath() + "/SecondJointAngleDeg", secondJointAngle.getDegrees());
+		Logger.recordOutput(getLogPath() + "/PositionMeters", getPositionMeters());
 	}
 
 	public Rotation2d getFirstJointAngle() {
@@ -39,9 +41,15 @@ public class DoubleJointedArm extends GBSubsystem {
 		this.secondJointAngle = secondJointAngle;
 	}
 
-	public void setAngles(Rotation2d a1, Rotation2d a2) {
-		setFirstJointAngle(a1);
-		setSecondJointAngle(a2);
+	public void setAngles(Rotation2d firstJointAngle, Rotation2d secondJointAngle) {
+		setFirstJointAngle(firstJointAngle);
+		setSecondJointAngle(secondJointAngle);
+	}
+
+	public Translation2d getPositionMeters() {
+		double xMeters = FIRST_JOINT_LENGTH_METERS * firstJointAngle.getCos() + SECOND_JOINT_LENGTH_METERS * secondJointAngle.getCos();
+		double yMeters = FIRST_JOINT_LENGTH_METERS * firstJointAngle.getSin() + SECOND_JOINT_LENGTH_METERS * secondJointAngle.getSin();
+		return new Translation2d(xMeters, yMeters);
 	}
 
 	public void applyTestBinds(SmartJoystick joystick) {
