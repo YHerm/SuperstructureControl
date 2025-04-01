@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class DoubleJointedArmVisualizer {
 
+	private static final MechanismLigament2d TARGET_POSITION_MARK = new MechanismLigament2d("mark", 0.03, 0, 10.0F, new Color8Bit(Color.kGreen));
+
 	private final Translation2d armRootPosition;
 
 	private final Mechanism2d mechanism;
@@ -18,7 +20,6 @@ public class DoubleJointedArmVisualizer {
 	private final MechanismLigament2d firstJoint;
 	private final MechanismLigament2d secondJoint;
 	private final MechanismRoot2d targetPosition;
-	private MechanismLigament2d targetPositionMark = new MechanismLigament2d("mark", 0.03, 0, 10.0F, new Color8Bit(Color.kGreen));
 
 	public DoubleJointedArmVisualizer(
 		String name,
@@ -36,7 +37,7 @@ public class DoubleJointedArmVisualizer {
 
 		firstJoint.append(secondJoint);
 		root.append(firstJoint);
-		targetPosition.append(targetPositionMark);
+		targetPosition.append(TARGET_POSITION_MARK);
 
 		showTargetPosition(false);
 
@@ -54,7 +55,7 @@ public class DoubleJointedArmVisualizer {
 	}
 
 	public void showTargetPosition(boolean show) {
-		targetPositionMark.setLength(show ? 0.01 : 0);
+		TARGET_POSITION_MARK.setLength(show ? 0.01 : 0);
 	}
 
 	private static Rotation2d toFloorRelative(Rotation2d floorRelativeAngle, Rotation2d jointRelativeAngle) {

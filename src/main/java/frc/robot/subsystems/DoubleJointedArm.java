@@ -11,6 +11,10 @@ public class DoubleJointedArm extends GBSubsystem {
 	public static final double FIRST_JOINT_LENGTH_METERS = 0.8;
 	public static final double SECOND_JOINT_LENGTH_METERS = 0.5;
 
+	public static final double TOTAL_ARM_LENGTH = FIRST_JOINT_LENGTH_METERS + SECOND_JOINT_LENGTH_METERS;
+	public static final double FIRST_JOINT_PERCENT_FROM_ARM = FIRST_JOINT_LENGTH_METERS / TOTAL_ARM_LENGTH;
+	public static final double SECOND_JOINT_PERCENT_FROM_ARM = SECOND_JOINT_LENGTH_METERS / TOTAL_ARM_LENGTH;
+
 	private Rotation2d firstJointAngle = new Rotation2d();
 	private Rotation2d secondJointAngle = new Rotation2d();
 
@@ -47,9 +51,16 @@ public class DoubleJointedArm extends GBSubsystem {
 	}
 
 	public Translation2d getPositionMeters() {
-		double xMeters = FIRST_JOINT_LENGTH_METERS * firstJointAngle.getCos() + SECOND_JOINT_LENGTH_METERS * secondJointAngle.getCos();
-		double yMeters = FIRST_JOINT_LENGTH_METERS * firstJointAngle.getSin() + SECOND_JOINT_LENGTH_METERS * secondJointAngle.getSin();
-		return new Translation2d(xMeters, yMeters);
+		return toPositionMeters(firstJointAngle, secondJointAngle);
+	}
+
+	public void setPosition(Translation2d positionMeters) {
+		double distanceMeters = positionMeters.getDistance(new Translation2d());
+
+		double alphaRads = Math.atan2(positionMeters.getY(), positionMeters.getX());
+		double omegaRads = Math.acos((distanceMeters * FIRST_JOINT_PERCENT_FROM_ARM) / FIRST_JOINT_LENGTH_METERS);
+
+		setAngles(Rotation2d.fromRadians(alphaRads + omegaRads), Rotation2d.fromRadians(alphaRads - omegaRads));
 	}
 
 	public void applyTestBinds(SmartJoystick joystick) {
@@ -57,6 +68,20 @@ public class DoubleJointedArm extends GBSubsystem {
 		joystick.B.onTrue(new InstantCommand(() -> setAngles(Rotation2d.fromDegrees(60), Rotation2d.fromDegrees(80))));
 		joystick.X.onTrue(new InstantCommand(() -> setAngles(Rotation2d.fromDegrees(150), Rotation2d.fromDegrees(75))));
 		joystick.Y.onTrue(new InstantCommand(() -> setAngles(Rotation2d.fromDegrees(95), Rotation2d.fromDegrees(85))));
+
+		joystick.POV_DOWN
+			.onTrue(new InstantCommand(() -> setPosition(toPositionMeters(Rotation2d.fromDegrees(100), Rotation2d.fromDegrees(210)))));
+		joystick.POV_RIGHT
+			.onTrue(new InstantCommand(() -> setPosition(toPositionMeters(Rotation2d.fromDegrees(60), Rotation2d.fromDegrees(80)))));
+		joystick.POV_LEFT
+			.onTrue(new InstantCommand(() -> setPosition(toPositionMeters(Rotation2d.fromDegrees(150), Rotation2d.fromDegrees(75)))));
+		joystick.POV_UP.onTrue(new InstantCommand(() -> setPosition(toPositionMeters(Rotation2d.fromDegrees(95), Rotation2d.fromDegrees(85)))));
+	}
+
+	private static Translation2d toPositionMeters(Rotation2d firstJointAngle, Rotation2d secondJointAngle) {
+		double xMeters = FIRST_JOINT_LENGTH_METERS * firstJointAngle.getCos() + SECOND_JOINT_LENGTH_METERS * secondJointAngle.getCos();
+		double yMeters = FIRST_JOINT_LENGTH_METERS * firstJointAngle.getSin() + SECOND_JOINT_LENGTH_METERS * secondJointAngle.getSin();
+		return new Translation2d(xMeters, yMeters);
 	}
 
 }
