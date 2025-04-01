@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 public class DoubleJointedArmVisualizer {
 
 	private static final MechanismLigament2d TARGET_POSITION_MARK = new MechanismLigament2d("mark", 0.03, 0, 10.0F, new Color8Bit(Color.kGreen));
+	private static final double DEFAULT_LINE_WIDTH = 10.0F;
 
 	private final Translation2d armRootPosition;
 
@@ -32,7 +33,7 @@ public class DoubleJointedArmVisualizer {
 		this.armRootPosition = new Translation2d(frameXMeters / 2.0, 0);
 		this.root = mechanism.getRoot(name + " DoubleJointedArm", frameXMeters / 2.0, 0);
 		this.firstJoint = new MechanismLigament2d("first joint", firstJointLengthMeters, 0);
-		this.secondJoint = new MechanismLigament2d("second joint", secondJointLengthMeters, 0, 10.0F, new Color8Bit(Color.kPurple));
+		this.secondJoint = new MechanismLigament2d("second joint", secondJointLengthMeters, 0, DEFAULT_LINE_WIDTH, new Color8Bit(Color.kPurple));
 		this.targetPosition = mechanism.getRoot(name + " TargetPosition", 0, 0);
 
 		firstJoint.append(secondJoint);
