@@ -66,16 +66,8 @@ public class DoubleJointedArm extends GBSubsystem {
 		double x = positionMeters.getX();
 		double y = positionMeters.getY();
 
-		double cosTheta2 = (x * x
-			+ y * y
-			- FIRST_JOINT_LENGTH_METERS * FIRST_JOINT_LENGTH_METERS
-			- SECOND_JOINT_LENGTH_METERS * SECOND_JOINT_LENGTH_METERS) / (2 * FIRST_JOINT_LENGTH_METERS * SECOND_JOINT_LENGTH_METERS);
+		double theta2 = cosineLaw(Math.sqrt(x * x + y * y), FIRST_JOINT_LENGTH_METERS, SECOND_JOINT_LENGTH_METERS).getRadians();
 
-		if (cosTheta2 < -1 || cosTheta2 > 1) {
-			throw new IllegalArgumentException("Position is unreachable.");
-		}
-
-		double theta2 = Math.acos(cosTheta2);
 		if (firstJointLeft) {
 			theta2 = -theta2;
 		}
@@ -101,6 +93,16 @@ public class DoubleJointedArm extends GBSubsystem {
 			.onTrue(new InstantCommand(() -> setPosition(toPositionMeters(Rotation2d.fromDegrees(150), Rotation2d.fromDegrees(75)), true)));
 		joystick.POV_UP
 			.onTrue(new InstantCommand(() -> setPosition(toPositionMeters(Rotation2d.fromDegrees(75), Rotation2d.fromDegrees(120)), false)));
+	}
+
+	public static Rotation2d cosineLaw(double farSide, double nearSide1, double nearSide2) {
+		double cosTheta = (farSide * farSide - nearSide1 * nearSide1 - nearSide2 * nearSide2) / (2 * nearSide1 * nearSide2);
+
+		if (cosTheta < -1 || cosTheta > 1) {
+			throw new IllegalArgumentException("Position is unreachable.");
+		}
+
+		return Rotation2d.fromRadians(Math.acos(cosTheta));
 	}
 
 }
