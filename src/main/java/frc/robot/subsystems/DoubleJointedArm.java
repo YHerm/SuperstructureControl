@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -10,10 +11,6 @@ public class DoubleJointedArm extends GBSubsystem {
 
 	public static final double FIRST_JOINT_LENGTH_METERS = 0.8;
 	public static final double SECOND_JOINT_LENGTH_METERS = 0.5;
-
-	public static final double TOTAL_ARM_LENGTH = FIRST_JOINT_LENGTH_METERS + SECOND_JOINT_LENGTH_METERS;
-	public static final double FIRST_JOINT_PERCENT_FROM_ARM = FIRST_JOINT_LENGTH_METERS / TOTAL_ARM_LENGTH;
-	public static final double SECOND_JOINT_PERCENT_FROM_ARM = SECOND_JOINT_LENGTH_METERS / TOTAL_ARM_LENGTH;
 
 	private Rotation2d firstJointAngle = new Rotation2d();
 	private Rotation2d secondJointAngle = new Rotation2d();
@@ -55,16 +52,31 @@ public class DoubleJointedArm extends GBSubsystem {
 	}
 
 	public void setPosition(Translation2d positionMeters, boolean firstJointLeft) {
-		double distanceMeters = positionMeters.getDistance(new Translation2d());
+		Pair<Rotation2d, Rotation2d> targetAngles = toAngles(positionMeters, firstJointLeft);
+		setAngles(targetAngles.getFirst(), targetAngles.getSecond());
+	}
 
-		double alphaRads = Math.atan2(positionMeters.getY(), positionMeters.getX());
-		double omegaRads = Math.acos((distanceMeters * FIRST_JOINT_PERCENT_FROM_ARM) / FIRST_JOINT_LENGTH_METERS);
+	private static Translation2d toPositionMeters(Rotation2d firstJointAngle, Rotation2d secondJointAngle) {
+		double xMeters = FIRST_JOINT_LENGTH_METERS * firstJointAngle.getCos() + SECOND_JOINT_LENGTH_METERS * secondJointAngle.getCos();
+		double yMeters = FIRST_JOINT_LENGTH_METERS * firstJointAngle.getSin() + SECOND_JOINT_LENGTH_METERS * secondJointAngle.getSin();
+		return new Translation2d(xMeters, yMeters);
+	}
 
-		if (!firstJointLeft) {
-			omegaRads = -omegaRads;
+	private static Pair<Rotation2d, Rotation2d> toAngles(Translation2d positionMeters, boolean firstJointLeft) {
+		double x = positionMeters.getX();
+		double y = positionMeters.getY();
+
+		double theta2 = cosineLaw(Math.sqrt(x * x + y * y), FIRST_JOINT_LENGTH_METERS, SECOND_JOINT_LENGTH_METERS).getRadians();
+
+		if (firstJointLeft) {
+			theta2 = -theta2;
 		}
 
-		setAngles(Rotation2d.fromRadians(alphaRads + omegaRads), Rotation2d.fromRadians(alphaRads - omegaRads));
+		double theta1 = Math.atan2(y, x)
+			- Math
+				.atan2(SECOND_JOINT_LENGTH_METERS * Math.sin(theta2), FIRST_JOINT_LENGTH_METERS + SECOND_JOINT_LENGTH_METERS * Math.cos(theta2));
+
+		return new Pair<>(Rotation2d.fromRadians(theta1), Rotation2d.fromRadians(theta1 + theta2));
 	}
 
 	public void applyTestBinds(SmartJoystick joystick) {
@@ -83,10 +95,14 @@ public class DoubleJointedArm extends GBSubsystem {
 			.onTrue(new InstantCommand(() -> setPosition(toPositionMeters(Rotation2d.fromDegrees(75), Rotation2d.fromDegrees(120)), false)));
 	}
 
-	private static Translation2d toPositionMeters(Rotation2d firstJointAngle, Rotation2d secondJointAngle) {
-		double xMeters = FIRST_JOINT_LENGTH_METERS * firstJointAngle.getCos() + SECOND_JOINT_LENGTH_METERS * secondJointAngle.getCos();
-		double yMeters = FIRST_JOINT_LENGTH_METERS * firstJointAngle.getSin() + SECOND_JOINT_LENGTH_METERS * secondJointAngle.getSin();
-		return new Translation2d(xMeters, yMeters);
+	public static Rotation2d cosineLaw(double farSide, double nearSide1, double nearSide2) {
+		double cosTheta = (farSide * farSide - nearSide1 * nearSide1 - nearSide2 * nearSide2) / (2 * nearSide1 * nearSide2);
+
+		if (cosTheta < -1 || cosTheta > 1) {
+			throw new IllegalArgumentException("Position is unreachable.");
+		}
+
+		return Rotation2d.fromRadians(Math.acos(cosTheta));
 	}
 
 }
