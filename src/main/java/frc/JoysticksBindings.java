@@ -37,25 +37,27 @@ public class JoysticksBindings {
 		// bindings...
 //		robot.getArm().applyTestBinds(usedJoystick);
 		usedJoystick.A.onTrue(
-			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathDown)).andThen(new WaitCommand(0.3))
+			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathDown.getStates())).andThen(new WaitCommand(0.3))
 				.andThen(new FollowPathCommand(Robot.pathDown, p -> robot.getArm().setPosition(p, true)))
 		);
 		usedJoystick.B.onTrue(
-			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathLeft)).andThen(new WaitCommand(0.3))
+			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathLeft.getStates())).andThen(new WaitCommand(0.3))
 				.andThen(new FollowPathCommand(Robot.pathLeft, p -> robot.getArm().setPosition(p, false)))
 		);
 		usedJoystick.Y.onTrue(
-			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathUp)).andThen(new WaitCommand(0.3))
-				.andThen(new FollowPathCommand(Robot.pathUp, p -> robot.getArm().setPosition(p, false)))
+			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathUp.getStates())).andThen(new WaitCommand(0.3))
+				.andThen(
+						new FollowPathCommand(Robot.pathUp, p -> robot.getArm().setPosition(p, false))
+		)
 		);
 
-		List<Pair<Translation2d, Boolean>> flipArm = PathGenerator
-			.flipArm(Robot.pathLeft.get(Robot.pathLeft.size() - 1), false, DoubleJointedArm.TOTAL_LENGTH_METERS);
-		usedJoystick.X.onTrue(
-			new InstantCommand(() -> robot.getArmVisualizer().showPath(PathGenerator.createTranslation2dList(flipArm)))
-				.andThen(new WaitCommand(0.3))
-				.andThen(new FollowPathWithSideCommand(flipArm, p -> robot.getArm().setPosition(p.getFirst(), p.getSecond())))
-		);
+//		List<Pair<Translation2d, Boolean>> flipArm = PathGenerator
+//			.flipArm(Robot.pathLeft.get(Robot.pathLeft.size() - 1), false, DoubleJointedArm.TOTAL_LENGTH_METERS);
+//		usedJoystick.X.onTrue(
+//			new InstantCommand(() -> robot.getArmVisualizer().showPath(PathGenerator.createTranslation2dList(flipArm)))
+//				.andThen(new WaitCommand(0.3))
+//				.andThen(new FollowPathWithSideCommand(flipArm, p -> robot.getArm().setPosition(p.getFirst(), p.getSecond())))
+//		);
 	}
 
 	private static void secondJoystickButtons(Robot robot) {
