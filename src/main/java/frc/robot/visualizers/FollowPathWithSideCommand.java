@@ -9,30 +9,30 @@ import java.util.function.Consumer;
 
 public class FollowPathWithSideCommand extends Command {
 
-    private final Consumer<Pair<Translation2d, Boolean>> setPositionWithSide;
-    private final List<Pair<Translation2d, Boolean>> path;
+	private final Consumer<Pair<Translation2d, Boolean>> setPositionWithSide;
+	private final List<Pair<Translation2d, Boolean>> path;
 
-    private int currentPoint = 0;
+	private int currentPoint = 0;
 
-    public FollowPathWithSideCommand(List<Pair<Translation2d, Boolean>> path, Consumer<Pair<Translation2d, Boolean>> setPositionWithSide) {
-        this.path = path;
-        this.setPositionWithSide = setPositionWithSide;
-    }
+	public FollowPathWithSideCommand(List<Pair<Translation2d, Boolean>> path, Consumer<Pair<Translation2d, Boolean>> setPositionWithSide) {
+		this.path = path;
+		this.setPositionWithSide = setPositionWithSide;
+	}
 
-    @Override
-    public void initialize() {
-        currentPoint = 0;
-    }
+	@Override
+	public void initialize() {
+		currentPoint = 0;
+	}
 
-    @Override
-    public void execute() {
-        setPositionWithSide.accept(path.get(currentPoint));
-        currentPoint++;
-    }
+	@Override
+	public void execute() {
+		setPositionWithSide.accept(path.get(currentPoint));
+		currentPoint++;
+	}
 
-    @Override
-    public boolean isFinished() {
-        return currentPoint >= path.size();
-    }
+	@Override
+	public boolean isFinished() {
+		return currentPoint >= path.size();
+	}
 
 }
