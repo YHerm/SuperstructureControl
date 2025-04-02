@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -12,6 +13,8 @@ import frc.robot.hardware.phoenix6.BusChain;
 import frc.robot.subsystems.DoubleJointedArm;
 import frc.robot.visualizers.DoubleJointedArmVisualizer;
 import frc.utils.battery.BatteryUtil;
+
+import java.util.ArrayList;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very little robot logic should
@@ -31,8 +34,34 @@ public class Robot {
 		DoubleJointedArm.SECOND_JOINT_LENGTH_METERS
 	);
 
+	public static ArrayList<Translation2d> points;
+
 	public Robot() {
 		BatteryUtil.scheduleLimiter();
+
+		points = new ArrayList<>();
+
+		// First segment: Move up along the Y-axis from (-0.3, 0.2) to (-0.3, 0.8)
+		double startY = 0.2;
+		double endY = 1;
+		double x1 = -0.4;
+		double step = 0.05;
+		for (double y = startY; y <= endY; y += step) {
+			points.add(new Translation2d(x1, y));
+		}
+
+		// Second segment: Move right along the X-axis from (-0.3, 0.8) to (0.3, 0.8)
+		double x2 = 0.4;
+		for (double x = x1 + step; x <= x2; x += step) {
+			points.add(new Translation2d(x, endY));
+		}
+
+		// Third segment: Move down along the Y-axis from (0.3, 0.8) to (0.3, 0.2)
+		for (double y = endY - step; y >= startY; y -= step) {
+			points.add(new Translation2d(x2, y));
+		}
+
+		armVisualizer.showPath(points);
 	}
 
 	public void periodic() {

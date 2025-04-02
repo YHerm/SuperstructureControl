@@ -3,6 +3,7 @@ package frc;
 import frc.joysticks.JoystickPorts;
 import frc.joysticks.SmartJoystick;
 import frc.robot.Robot;
+import frc.robot.visualizers.FollowPathCommand;
 
 public class JoysticksBindings {
 
@@ -25,7 +26,8 @@ public class JoysticksBindings {
 	private static void mainJoystickButtons(Robot robot) {
 		SmartJoystick usedJoystick = MAIN_JOYSTICK;
 		// bindings...
-		robot.getArm().applyTestBinds(usedJoystick);
+//		robot.getArm().applyTestBinds(usedJoystick);
+		usedJoystick.A.onTrue(new FollowPathCommand(Robot.points, p ->  robot.getArm().setPosition(p, false)));
 	}
 
 	private static void secondJoystickButtons(Robot robot) {
