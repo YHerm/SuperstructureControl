@@ -9,36 +9,36 @@ import java.util.function.Consumer;
 
 public class FollowPathCommand extends Command {
 
-    private final double delay = 0.2;
-    private final Consumer<Translation2d> setPosition;
-    private final List<Translation2d> path;
+	private final double DELAY_SECONDS = 0.2;
+	private final Consumer<Translation2d> setPosition;
+	private final List<Translation2d> path;
 
-    private double lastSetTime = 0;
-    private int currentPoint = 0;
+	private double lastSetTime = 0;
+	private int currentPoint = 0;
 
-    public FollowPathCommand(List<Translation2d> path, Consumer<Translation2d> setPosition) {
-        this.path = path;
-        this.setPosition = setPosition;
-    }
+	public FollowPathCommand(List<Translation2d> path, Consumer<Translation2d> setPosition) {
+		this.path = path;
+		this.setPosition = setPosition;
+	}
 
-    @Override
-    public void initialize() {
-        currentPoint = 0;
-        lastSetTime = 0;
-    }
+	@Override
+	public void initialize() {
+		currentPoint = 0;
+		lastSetTime = 0;
+	}
 
-    @Override
-    public void execute() {
-        if (TimeUtil.getCurrentTimeSeconds() - lastSetTime > delay) {
-            lastSetTime = TimeUtil.getCurrentTimeSeconds();
-            setPosition.accept(path.get(currentPoint));
-            currentPoint++;
-        }
-    }
+	@Override
+	public void execute() {
+		if (TimeUtil.getCurrentTimeSeconds() - lastSetTime > DELAY_SECONDS) {
+			lastSetTime = TimeUtil.getCurrentTimeSeconds();
+			setPosition.accept(path.get(currentPoint));
+			currentPoint++;
+		}
+	}
 
-    @Override
-    public boolean isFinished() {
-        return currentPoint >= path.size();
-    }
+	@Override
+	public boolean isFinished() {
+		return currentPoint >= path.size();
+	}
 
 }

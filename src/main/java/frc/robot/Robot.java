@@ -12,9 +12,10 @@ import frc.RobotManager;
 import frc.robot.hardware.phoenix6.BusChain;
 import frc.robot.subsystems.DoubleJointedArm;
 import frc.robot.visualizers.DoubleJointedArmVisualizer;
+import frc.robot.visualizers.PathGenerator;
 import frc.utils.battery.BatteryUtil;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very little robot logic should
@@ -34,34 +35,16 @@ public class Robot {
 		DoubleJointedArm.SECOND_JOINT_LENGTH_METERS
 	);
 
-	public static ArrayList<Translation2d> points;
+	public static List<Translation2d> pathUp;
+	public static List<Translation2d> pathLeft;
+	public static List<Translation2d> pathDown;
 
 	public Robot() {
 		BatteryUtil.scheduleLimiter();
 
-		points = new ArrayList<>();
-
-		// First segment: Move up along the Y-axis from (-0.3, 0.2) to (-0.3, 0.8)
-		double startY = 0.2;
-		double endY = 1;
-		double x1 = -0.4;
-		double step = 0.05;
-		for (double y = startY; y <= endY; y += step) {
-			points.add(new Translation2d(x1, y));
-		}
-
-		// Second segment: Move right along the X-axis from (-0.3, 0.8) to (0.3, 0.8)
-		double x2 = 0.4;
-		for (double x = x1 + step; x <= x2; x += step) {
-			points.add(new Translation2d(x, endY));
-		}
-
-		// Third segment: Move down along the Y-axis from (0.3, 0.8) to (0.3, 0.2)
-		for (double y = endY - step; y >= startY; y -= step) {
-			points.add(new Translation2d(x2, y));
-		}
-
-		armVisualizer.showPath(points);
+		pathUp = PathGenerator.straightLine(new Translation2d(-0.4, 0.05), new Translation2d(-0.4, 1), 8);
+		pathLeft = PathGenerator.straightLine(new Translation2d(-0.4, 1), new Translation2d(0.4, 1), 8);
+		pathDown = PathGenerator.straightLine(new Translation2d(0.4, 1), new Translation2d(0.4, 0.05), 8);
 	}
 
 	public void periodic() {
@@ -80,6 +63,10 @@ public class Robot {
 
 	public DoubleJointedArm getArm() {
 		return arm;
+	}
+
+	public DoubleJointedArmVisualizer getArmVisualizer() {
+		return armVisualizer;
 	}
 
 }

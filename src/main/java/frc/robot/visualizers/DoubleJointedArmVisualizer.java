@@ -60,7 +60,7 @@ public class DoubleJointedArmVisualizer {
 	}
 
 	public void showTargetPosition(boolean show) {
-		TARGET_POSITION_MARK.setLength(show ? 0.01 : 0);
+		TARGET_POSITION_MARK.setLineWeight(show ? DEFAULT_LINE_WIDTH : 0);
 	}
 
 	public void showPath(List<Translation2d> path) {
@@ -80,7 +80,7 @@ public class DoubleJointedArmVisualizer {
 		}
 		if (!paths.isEmpty()) {
 			for (int i = 0; i < paths.get(paths.size() - 1).size(); i++) {
-				paths.get(paths.size() - 1).get(i).setLength(0);
+				paths.get(paths.size() - 1).get(i).setLineWeight(0);
 			}
 		}
 		paths.add(pathVisualize);

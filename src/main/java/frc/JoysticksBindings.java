@@ -1,5 +1,6 @@
 package frc;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.joysticks.JoystickPorts;
 import frc.joysticks.SmartJoystick;
 import frc.robot.Robot;
@@ -27,7 +28,18 @@ public class JoysticksBindings {
 		SmartJoystick usedJoystick = MAIN_JOYSTICK;
 		// bindings...
 //		robot.getArm().applyTestBinds(usedJoystick);
-		usedJoystick.A.onTrue(new FollowPathCommand(Robot.points, p ->  robot.getArm().setPosition(p, false)));
+		usedJoystick.A.onTrue(
+			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathDown))
+				.andThen(new FollowPathCommand(Robot.pathDown, p -> robot.getArm().setPosition(p, false)))
+		);
+		usedJoystick.B.onTrue(
+				new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathLeft))
+						.andThen(new FollowPathCommand(Robot.pathLeft, p -> robot.getArm().setPosition(p, false)))
+		);
+		usedJoystick.Y.onTrue(
+				new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathUp))
+						.andThen(new FollowPathCommand(Robot.pathUp, p -> robot.getArm().setPosition(p, false)))
+		);
 	}
 
 	private static void secondJoystickButtons(Robot robot) {
