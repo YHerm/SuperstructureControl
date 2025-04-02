@@ -9,6 +9,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DoubleJointedArmVisualizer {
 
 	private static final MechanismLigament2d TARGET_POSITION_MARK = new MechanismLigament2d("mark", 0.01, 0, 10.0F, new Color8Bit(Color.kGreen));
@@ -21,6 +24,7 @@ public class DoubleJointedArmVisualizer {
 	private final MechanismLigament2d firstJoint;
 	private final MechanismLigament2d secondJoint;
 	private final MechanismRoot2d targetPosition;
+	private final ArrayList<ArrayList<MechanismLigament2d>> paths = new ArrayList<>();
 
 	public DoubleJointedArmVisualizer(
 		String name,
@@ -56,7 +60,30 @@ public class DoubleJointedArmVisualizer {
 	}
 
 	public void showTargetPosition(boolean show) {
-		TARGET_POSITION_MARK.setLength(show ? 0.01 : 0);
+		TARGET_POSITION_MARK.setLineWeight(show ? DEFAULT_LINE_WIDTH : 0);
+	}
+
+	public void showPath(List<Translation2d> path) {
+		ArrayList<MechanismLigament2d> pathVisualize = new ArrayList<>(path.size());
+		for (int i = 0; i < path.size(); i++) {
+			MechanismRoot2d root = mechanism
+				.getRoot(paths.size() + ", " + i, path.get(i).getX() + armRootPosition.getX(), path.get(i).getY() + armRootPosition.getY());
+			MechanismLigament2d mark = new MechanismLigament2d(
+				paths.size() + ", " + i + " mark",
+				0.01,
+				0,
+				10.0F,
+				new Color8Bit(Color.kBlueViolet)
+			);
+			pathVisualize.add(mark);
+			root.append(mark);
+		}
+		if (!paths.isEmpty()) {
+			for (int i = 0; i < paths.get(paths.size() - 1).size(); i++) {
+				paths.get(paths.size() - 1).get(i).setLineWeight(0);
+			}
+		}
+		paths.add(pathVisualize);
 	}
 
 	private static Rotation2d toFloorRelative(Rotation2d floorRelativeAngle, Rotation2d jointRelativeAngle) {

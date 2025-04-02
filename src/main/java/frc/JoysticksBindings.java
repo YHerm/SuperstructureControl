@@ -1,8 +1,18 @@
 package frc;
 
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.joysticks.JoystickPorts;
 import frc.joysticks.SmartJoystick;
 import frc.robot.Robot;
+import frc.robot.subsystems.DoubleJointedArm;
+import frc.robot.visualizers.FollowPathCommand;
+import frc.robot.visualizers.FollowPathWithSideCommand;
+import frc.robot.visualizers.PathGenerator;
+
+import java.util.List;
 
 public class JoysticksBindings {
 
@@ -25,7 +35,27 @@ public class JoysticksBindings {
 	private static void mainJoystickButtons(Robot robot) {
 		SmartJoystick usedJoystick = MAIN_JOYSTICK;
 		// bindings...
-		robot.getArm().applyTestBinds(usedJoystick);
+//		robot.getArm().applyTestBinds(usedJoystick);
+		usedJoystick.A.onTrue(
+			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathDown)).andThen(new WaitCommand(0.3))
+				.andThen(new FollowPathCommand(Robot.pathDown, p -> robot.getArm().setPosition(p, true)))
+		);
+		usedJoystick.B.onTrue(
+			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathLeft)).andThen(new WaitCommand(0.3))
+				.andThen(new FollowPathCommand(Robot.pathLeft, p -> robot.getArm().setPosition(p, false)))
+		);
+		usedJoystick.Y.onTrue(
+			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathUp)).andThen(new WaitCommand(0.3))
+				.andThen(new FollowPathCommand(Robot.pathUp, p -> robot.getArm().setPosition(p, false)))
+		);
+
+		List<Pair<Translation2d, Boolean>> flipArm = PathGenerator
+			.flipArm(Robot.pathLeft.get(Robot.pathLeft.size() - 1), false, DoubleJointedArm.TOTAL_LENGTH_METERS);
+		usedJoystick.X.onTrue(
+			new InstantCommand(() -> robot.getArmVisualizer().showPath(PathGenerator.createTranslation2dList(flipArm)))
+				.andThen(new WaitCommand(0.3))
+				.andThen(new FollowPathWithSideCommand(flipArm, p -> robot.getArm().setPosition(p.getFirst(), p.getSecond())))
+		);
 	}
 
 	private static void secondJoystickButtons(Robot robot) {

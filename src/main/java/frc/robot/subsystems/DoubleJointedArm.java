@@ -11,6 +11,7 @@ public class DoubleJointedArm extends GBSubsystem {
 
 	public static final double FIRST_JOINT_LENGTH_METERS = 0.8;
 	public static final double SECOND_JOINT_LENGTH_METERS = 0.5;
+	public static final double TOTAL_LENGTH_METERS = FIRST_JOINT_LENGTH_METERS + SECOND_JOINT_LENGTH_METERS;
 
 	private Rotation2d firstJointAngle = new Rotation2d();
 	private Rotation2d secondJointAngle = new Rotation2d();

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -11,7 +12,10 @@ import frc.RobotManager;
 import frc.robot.hardware.phoenix6.BusChain;
 import frc.robot.subsystems.DoubleJointedArm;
 import frc.robot.visualizers.DoubleJointedArmVisualizer;
+import frc.robot.visualizers.PathGenerator;
 import frc.utils.battery.BatteryUtil;
+
+import java.util.List;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very little robot logic should
@@ -31,8 +35,16 @@ public class Robot {
 		DoubleJointedArm.SECOND_JOINT_LENGTH_METERS
 	);
 
+	public static List<Translation2d> pathUp;
+	public static List<Translation2d> pathLeft;
+	public static List<Translation2d> pathDown;
+
 	public Robot() {
 		BatteryUtil.scheduleLimiter();
+
+		pathUp = PathGenerator.straightLine(new Translation2d(-0.4, 0.05), new Translation2d(-0.4, 1));
+		pathLeft = PathGenerator.straightLine(new Translation2d(-0.4, 1), new Translation2d(0.4, 1));
+		pathDown = PathGenerator.straightLine(new Translation2d(0.4, 1), new Translation2d(0.4, 0.05));
 	}
 
 	public void periodic() {
@@ -51,6 +63,10 @@ public class Robot {
 
 	public DoubleJointedArm getArm() {
 		return arm;
+	}
+
+	public DoubleJointedArmVisualizer getArmVisualizer() {
+		return armVisualizer;
 	}
 
 }
