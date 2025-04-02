@@ -8,7 +8,8 @@ import java.util.List;
 public class PathGenerator {
 
 
-	public static List<Translation2d> straightLine(Translation2d start, Translation2d end, int steps) {
+	public static List<Translation2d> straightLine(Translation2d start, Translation2d end) {
+		int steps = (int) (end.getDistance(start) / 0.015);
 		List<Translation2d> points = new ArrayList<>();
 
 		double deltaX = end.getX() - start.getX();

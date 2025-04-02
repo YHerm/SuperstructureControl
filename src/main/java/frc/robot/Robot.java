@@ -42,9 +42,9 @@ public class Robot {
 	public Robot() {
 		BatteryUtil.scheduleLimiter();
 
-		pathUp = PathGenerator.straightLine(new Translation2d(-0.4, 0.05), new Translation2d(-0.4, 1), 8);
-		pathLeft = PathGenerator.straightLine(new Translation2d(-0.4, 1), new Translation2d(0.4, 1), 8);
-		pathDown = PathGenerator.straightLine(new Translation2d(0.4, 1), new Translation2d(0.4, 0.05), 8);
+		pathUp = PathGenerator.straightLine(new Translation2d(-0.4, 0.05), new Translation2d(-0.4, 1));
+		pathLeft = PathGenerator.straightLine(new Translation2d(-0.4, 1), new Translation2d(0.4, 1));
+		pathDown = PathGenerator.straightLine(new Translation2d(0.4, 1), new Translation2d(0.4, 0.05));
 	}
 
 	public void periodic() {
