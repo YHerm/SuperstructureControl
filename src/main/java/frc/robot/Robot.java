@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.RobotManager;
 import frc.robot.hardware.phoenix6.BusChain;
-import frc.robot.subsystems.DoubleJointedArm;
-import frc.robot.visualizers.DoubleJointedArmVisualizer;
+import frc.robot.structures.doublejointedarm.DoubleJointedArm;
+import frc.robot.structures.doublejointedarm.DoubleJointedArmVisualizer;
 import frc.utils.battery.BatteryUtil;
 
 import java.util.List;
@@ -35,8 +35,8 @@ public class Robot {
 		"",
 		2.5,
 		2.5,
-		DoubleJointedArm.FIRST_JOINT_LENGTH_METERS,
-		DoubleJointedArm.SECOND_JOINT_LENGTH_METERS
+		DoubleJointedArm.ELBOW_LENGTH_METERS,
+		DoubleJointedArm.WRIST_LENGTH_METERS
 	);
 
 	public static Trajectory pathUp;
@@ -71,7 +71,7 @@ public class Robot {
 		BatteryUtil.logStatus();
 		BusChain.logChainsStatuses();
 
-		armVisualizer.setAngles(arm.getFirstJointAngle(), arm.getSecondJointAngle());
+		armVisualizer.setAngles(arm.getElbowAngle(), arm.getWristAngle());
 		armVisualizer.setTargetPositionMeters(arm.getPositionMeters());
 
 		CommandScheduler.getInstance().run(); // Should be last

@@ -1,4 +1,4 @@
-package frc.robot.visualizers;
+package frc.robot.structures;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -7,14 +7,14 @@ import frc.utils.time.TimeUtil;
 
 import java.util.function.Consumer;
 
-public class FollowPathCommand extends Command {
+public class FollowTrajectoryDemo extends Command {
 
 	private final Consumer<Translation2d> setPosition;
 	private final Trajectory path;
 
 	private double startTime = 0;
 
-	public FollowPathCommand(Trajectory trajectory, Consumer<Translation2d> setPosition) {
+	public FollowTrajectoryDemo(Trajectory trajectory, Consumer<Translation2d> setPosition) {
 		this.path = trajectory;
 		this.setPosition = setPosition;
 	}
