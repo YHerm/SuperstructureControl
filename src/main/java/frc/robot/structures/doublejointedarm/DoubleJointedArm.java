@@ -1,5 +1,6 @@
 package frc.robot.structures.doublejointedarm;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -64,12 +65,40 @@ public class DoubleJointedArm extends GBSubsystem {
 		setAngles(targetAngles.get().elbowAngle(), targetAngles.get().wristAngle());
 	}
 
-	private static Optional<ArmAngles> toAngles(Translation2d positionMeters, boolean isElbowLeft) {
+	public void setPosition(Translation2d positionMeters) {
+		Optional<ArmAngles> targetAngles = toAngles(positionMeters);
+		if (targetAngles.isEmpty()) {
+			new Alert(Alert.AlertType.ERROR, getLogPath() + "unreachable position").report();
+			return;
+		}
+		setAngles(targetAngles.get().elbowAngle(), targetAngles.get().wristAngle());
+	}
+
+	private Optional<ArmAngles> toAngles(Translation2d positionMeters) {
+		return DoubleJointedArmKinematics.toAngles(
+			positionMeters,
+			ELBOW_LENGTH_METERS,
+			WRIST_LENGTH_METERS,
+			isGoingTowardsElbow(positionMeters)
+		);
+	}
+
+	private boolean isGoingTowardsElbow(Translation2d positionMeters) {
+		boolean isLettingAutoPick =
+			Math.abs(MathUtil.angleModulus(getElbowAngle().getRadians() - positionMeters.getAngle().getRadians())) < Rotation2d.fromDegrees(3).getRadians();
+		return isLettingAutoPick ? positionMeters.getX() > 0 : getElbowAngle().getRadians() > positionMeters.getAngle().getRadians();
+	}
+
+	private Optional<ArmAngles> toAngles(Translation2d positionMeters, boolean isElbowLeft) {
 		return DoubleJointedArmKinematics.toAngles(positionMeters, ELBOW_LENGTH_METERS, WRIST_LENGTH_METERS, isElbowLeft);
 	}
 
 	private static Translation2d toPositionMeters(Rotation2d elbowAngle, Rotation2d wristAngle) {
 		return DoubleJointedArmKinematics.toPositionMeters(new ArmAngles(elbowAngle, wristAngle), ELBOW_LENGTH_METERS, WRIST_LENGTH_METERS);
+	}
+
+	private static Rotation2d toElbowRelative(Rotation2d elbowAngle, Rotation2d wristAngle) {
+		return elbowAngle.minus(wristAngle);
 	}
 
 	public void applyTestBinds(SmartJoystick joystick) {

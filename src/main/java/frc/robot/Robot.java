@@ -55,7 +55,7 @@ public class Robot {
 
 		pathLeft = TrajectoryGenerator.generateTrajectory(
 			new Pose2d(new Translation2d(-0.4, 1), Rotation2d.fromDegrees(0)),
-			List.of(),
+			List.of(new Translation2d(0.1, 1.2)),
 			new Pose2d(new Translation2d(0.4, 1), Rotation2d.fromDegrees(0)),
 			new TrajectoryConfig(2, 2).setStartVelocity(0).setEndVelocity(0)
 		);

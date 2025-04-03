@@ -1,5 +1,6 @@
 package frc;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.joysticks.JoystickPorts;
@@ -32,16 +33,19 @@ public class JoysticksBindings {
 //		robot.getArm().applyTestBinds(usedJoystick);
 		usedJoystick.A.onTrue(
 			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathDown.getStates())).andThen(new WaitCommand(0.3))
-				.andThen(new FollowTrajectoryDemo(Robot.pathDown, p -> robot.getArm().setPosition(p, true)))
+				.andThen(new FollowTrajectoryDemo(Robot.pathDown, p -> robot.getArm().setPosition(p)))
 		);
 		usedJoystick.B.onTrue(
 			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathLeft.getStates())).andThen(new WaitCommand(0.3))
-				.andThen(new FollowTrajectoryDemo(Robot.pathLeft, p -> robot.getArm().setPosition(p, false)))
+				.andThen(new FollowTrajectoryDemo(Robot.pathLeft, p -> robot.getArm().setPosition(p)))
 		);
 		usedJoystick.Y.onTrue(
 			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathUp.getStates())).andThen(new WaitCommand(0.3))
-				.andThen(new FollowTrajectoryDemo(Robot.pathUp, p -> robot.getArm().setPosition(p, false)))
+				.andThen(new FollowTrajectoryDemo(Robot.pathUp, p -> robot.getArm().setPosition(p)))
 		);
+
+		usedJoystick.START.onTrue(new InstantCommand(() -> robot.getArm().setPosition(new Translation2d(0, 1), false)));
+		usedJoystick.BACK.onTrue(new InstantCommand(() -> robot.getArm().setPosition(new Translation2d(0, 1), true)));
 
 //		List<Pair<Translation2d, Boolean>> flipArm = PathGenerator
 //			.flipArm(Robot.pathLeft.get(Robot.pathLeft.size() - 1), false, DoubleJointedArm.TOTAL_LENGTH_METERS);
