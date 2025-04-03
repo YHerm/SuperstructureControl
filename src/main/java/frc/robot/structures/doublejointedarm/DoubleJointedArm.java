@@ -59,26 +59,7 @@ public class DoubleJointedArm extends GBSubsystem {
 	}
 
 	private static Translation2d toPositionMeters(Rotation2d firstJointAngle, Rotation2d secondJointAngle) {
-		double xMeters = FIRST_JOINT_LENGTH_METERS * firstJointAngle.getCos() + SECOND_JOINT_LENGTH_METERS * secondJointAngle.getCos();
-		double yMeters = FIRST_JOINT_LENGTH_METERS * firstJointAngle.getSin() + SECOND_JOINT_LENGTH_METERS * secondJointAngle.getSin();
-		return new Translation2d(xMeters, yMeters);
-	}
-
-	private static Pair<Rotation2d, Rotation2d> toAngles(Translation2d positionMeters, boolean firstJointLeft) {
-		double x = positionMeters.getX();
-		double y = positionMeters.getY();
-
-		double theta2 = cosineLaw(Math.sqrt(x * x + y * y), FIRST_JOINT_LENGTH_METERS, SECOND_JOINT_LENGTH_METERS).getRadians();
-
-		if (firstJointLeft) {
-			theta2 = -theta2;
-		}
-
-		double theta1 = Math.atan2(y, x)
-			- Math
-				.atan2(SECOND_JOINT_LENGTH_METERS * Math.sin(theta2), FIRST_JOINT_LENGTH_METERS + SECOND_JOINT_LENGTH_METERS * Math.cos(theta2));
-
-		return new Pair<>(Rotation2d.fromRadians(theta1), Rotation2d.fromRadians(theta1 + theta2));
+		return DoubleJointedArmKinematics.toPositionMeters(new ArmAngles(firstJointAngle, secondJointAngle), FIRST_JOINT_LENGTH_METERS, SECOND_JOINT_LENGTH_METERS);
 	}
 
 	public void applyTestBinds(SmartJoystick joystick) {
@@ -97,14 +78,5 @@ public class DoubleJointedArm extends GBSubsystem {
 			.onTrue(new InstantCommand(() -> setPosition(toPositionMeters(Rotation2d.fromDegrees(75), Rotation2d.fromDegrees(120)), false)));
 	}
 
-	public static Rotation2d cosineLaw(double farSide, double nearSide1, double nearSide2) {
-		double cosTheta = (farSide * farSide - nearSide1 * nearSide1 - nearSide2 * nearSide2) / (2 * nearSide1 * nearSide2);
-
-		if (cosTheta < -1 || cosTheta > 1) {
-			throw new IllegalArgumentException("Position is unreachable.");
-		}
-
-		return Rotation2d.fromRadians(Math.acos(cosTheta));
-	}
 
 }
