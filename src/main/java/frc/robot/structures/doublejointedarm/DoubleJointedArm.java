@@ -16,6 +16,7 @@ public class DoubleJointedArm extends GBSubsystem {
 	public static final double ELBOW_LENGTH_METERS = 0.8;
 	public static final double WRIST_LENGTH_METERS = 0.5;
 	public static final double TOTAL_LENGTH_METERS = ELBOW_LENGTH_METERS + WRIST_LENGTH_METERS;
+	public static final Rotation2d SWITCH_DIRECTION_TOLERANCE = Rotation2d.fromDegrees(3);
 
 	private Rotation2d elbowAngle = new Rotation2d();
 	private Rotation2d wristAngle = new Rotation2d();
@@ -65,6 +66,10 @@ public class DoubleJointedArm extends GBSubsystem {
 		setAngles(targetAngles.get().elbowAngle(), targetAngles.get().wristAngle());
 	}
 
+	private Optional<ArmAngles> toAngles(Translation2d positionMeters, boolean isElbowLeft) {
+		return DoubleJointedArmKinematics.toAngles(positionMeters, ELBOW_LENGTH_METERS, WRIST_LENGTH_METERS, isElbowLeft);
+	}
+
 	public void setPosition(Translation2d positionMeters) {
 		Optional<ArmAngles> targetAngles = toAngles(positionMeters);
 		if (targetAngles.isEmpty()) {
@@ -75,30 +80,20 @@ public class DoubleJointedArm extends GBSubsystem {
 	}
 
 	private Optional<ArmAngles> toAngles(Translation2d positionMeters) {
-		return DoubleJointedArmKinematics.toAngles(
-			positionMeters,
-			ELBOW_LENGTH_METERS,
-			WRIST_LENGTH_METERS,
-			isGoingTowardsElbow(positionMeters)
-		);
+		return DoubleJointedArmKinematics.toAngles(positionMeters, ELBOW_LENGTH_METERS, WRIST_LENGTH_METERS, isElbowLeft(positionMeters));
 	}
 
-	private boolean isGoingTowardsElbow(Translation2d positionMeters) {
-		boolean isLettingAutoPick =
-			Math.abs(MathUtil.angleModulus(getElbowAngle().getRadians() - positionMeters.getAngle().getRadians())) < Rotation2d.fromDegrees(3).getRadians();
-		return isLettingAutoPick ? positionMeters.getX() > 0 : getElbowAngle().getRadians() > positionMeters.getAngle().getRadians();
-	}
+	private boolean isElbowLeft(Translation2d positionMeters) {
+		double elbowRads = getElbowAngle().getRadians();
+		double positionRads = positionMeters.getAngle().getRadians();
+		double distanceFromStraightLineRads = Math.abs(MathUtil.angleModulus(elbowRads - positionRads));
 
-	private Optional<ArmAngles> toAngles(Translation2d positionMeters, boolean isElbowLeft) {
-		return DoubleJointedArmKinematics.toAngles(positionMeters, ELBOW_LENGTH_METERS, WRIST_LENGTH_METERS, isElbowLeft);
+		boolean isLettingAutoPick = distanceFromStraightLineRads < SWITCH_DIRECTION_TOLERANCE.getRadians();
+		return isLettingAutoPick ? positionMeters.getX() > 0 : elbowRads > positionRads;
 	}
 
 	private static Translation2d toPositionMeters(Rotation2d elbowAngle, Rotation2d wristAngle) {
 		return DoubleJointedArmKinematics.toPositionMeters(new ArmAngles(elbowAngle, wristAngle), ELBOW_LENGTH_METERS, WRIST_LENGTH_METERS);
-	}
-
-	private static Rotation2d toElbowRelative(Rotation2d elbowAngle, Rotation2d wristAngle) {
-		return elbowAngle.minus(wristAngle);
 	}
 
 	public void applyTestBinds(SmartJoystick joystick) {
