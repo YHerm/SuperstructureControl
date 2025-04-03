@@ -67,8 +67,11 @@ public class DoubleJointedArmVisualizer {
 	public void showPath(List<Trajectory.State> path) {
 		ArrayList<MechanismLigament2d> pathVisualize = new ArrayList<>(path.size());
 		for (int i = 0; i < path.size(); i++) {
-			MechanismRoot2d root = mechanism
-				.getRoot(paths.size() + ", " + i, path.get(i).poseMeters.getX() + armRootPosition.getX(), path.get(i).poseMeters.getY() + armRootPosition.getY());
+			MechanismRoot2d root = mechanism.getRoot(
+				paths.size() + ", " + i,
+				path.get(i).poseMeters.getX() + armRootPosition.getX(),
+				path.get(i).poseMeters.getY() + armRootPosition.getY()
+			);
 			MechanismLigament2d mark = new MechanismLigament2d(
 				paths.size() + ", " + i + " mark",
 				0.01,

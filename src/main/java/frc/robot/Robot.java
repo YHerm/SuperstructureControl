@@ -17,7 +17,6 @@ import frc.RobotManager;
 import frc.robot.hardware.phoenix6.BusChain;
 import frc.robot.subsystems.DoubleJointedArm;
 import frc.robot.visualizers.DoubleJointedArmVisualizer;
-import frc.robot.visualizers.PathGenerator;
 import frc.utils.battery.BatteryUtil;
 
 import java.util.List;
@@ -51,20 +50,20 @@ public class Robot {
 			new Pose2d(new Translation2d(-0.4, 0.05), Rotation2d.fromDegrees(90)),
 			List.of(),
 			new Pose2d(new Translation2d(-0.4, 1), Rotation2d.fromDegrees(90)),
-			new TrajectoryConfig(2,2).setStartVelocity(0).setEndVelocity(0)
+			new TrajectoryConfig(2, 2).setStartVelocity(0).setEndVelocity(0)
 		);
 
 		pathLeft = TrajectoryGenerator.generateTrajectory(
 			new Pose2d(new Translation2d(-0.4, 1), Rotation2d.fromDegrees(0)),
 			List.of(),
 			new Pose2d(new Translation2d(0.4, 1), Rotation2d.fromDegrees(0)),
-			new TrajectoryConfig(2,2).setStartVelocity(0).setEndVelocity(0)
+			new TrajectoryConfig(2, 2).setStartVelocity(0).setEndVelocity(0)
 		);
-		pathDown =TrajectoryGenerator.generateTrajectory(
+		pathDown = TrajectoryGenerator.generateTrajectory(
 			new Pose2d(new Translation2d(0.4, 1), Rotation2d.fromDegrees(-90)),
 			List.of(),
 			new Pose2d(new Translation2d(0.4, 0.05), Rotation2d.fromDegrees(-90)),
-			new TrajectoryConfig(2,2).setStartVelocity(0).setEndVelocity(0)
+			new TrajectoryConfig(2, 2).setStartVelocity(0).setEndVelocity(0)
 		);
 	}
 

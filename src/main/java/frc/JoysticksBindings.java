@@ -1,18 +1,12 @@
 package frc;
 
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.joysticks.JoystickPorts;
 import frc.joysticks.SmartJoystick;
 import frc.robot.Robot;
-import frc.robot.subsystems.DoubleJointedArm;
 import frc.robot.visualizers.FollowPathCommand;
-import frc.robot.visualizers.FollowPathWithSideCommand;
-import frc.robot.visualizers.PathGenerator;
 
-import java.util.List;
 
 public class JoysticksBindings {
 
@@ -46,9 +40,7 @@ public class JoysticksBindings {
 		);
 		usedJoystick.Y.onTrue(
 			new InstantCommand(() -> robot.getArmVisualizer().showPath(Robot.pathUp.getStates())).andThen(new WaitCommand(0.3))
-				.andThen(
-						new FollowPathCommand(Robot.pathUp, p -> robot.getArm().setPosition(p, false))
-		)
+				.andThen(new FollowPathCommand(Robot.pathUp, p -> robot.getArm().setPosition(p, false)))
 		);
 
 //		List<Pair<Translation2d, Boolean>> flipArm = PathGenerator
