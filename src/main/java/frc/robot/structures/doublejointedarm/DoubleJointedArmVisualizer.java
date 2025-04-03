@@ -87,7 +87,7 @@ public class DoubleJointedArmVisualizer {
 				0,
 				0,
 				DEFAULT_LINE_WIDTH,
-				new Color8Bit(Color.kBlueViolet)
+				new Color8Bit(Color.kCyan)
 			);
 			pathVisualize.add(mark);
 			root.append(mark);
