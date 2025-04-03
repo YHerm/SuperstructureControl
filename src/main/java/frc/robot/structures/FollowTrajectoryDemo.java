@@ -1,4 +1,4 @@
-package frc.robot.structures.doublejointedarm;
+package frc.robot.structures;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;

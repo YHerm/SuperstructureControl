@@ -22,8 +22,8 @@ public class DoubleJointedArmVisualizer {
 
 	private final Mechanism2d mechanism;
 	private final MechanismRoot2d root;
-	private final MechanismLigament2d firstJoint;
-	private final MechanismLigament2d secondJoint;
+	private final MechanismLigament2d elbow;
+	private final MechanismLigament2d wrist;
 	private final MechanismRoot2d targetPosition;
 	private final ArrayList<ArrayList<MechanismLigament2d>> paths = new ArrayList<>();
 
@@ -33,18 +33,18 @@ public class DoubleJointedArmVisualizer {
 		String name,
 		double frameXMeters,
 		double frameYMeters,
-		double firstJointLengthMeters,
-		double secondJointLengthMeters
+		double elbowLengthMeters,
+		double wristLengthMeters
 	) {
 		this.mechanism = new Mechanism2d(frameXMeters, frameYMeters);
 		this.armRootPosition = new Translation2d(frameXMeters / 2.0, 0);
 		this.root = mechanism.getRoot(name + " DoubleJointedArm", frameXMeters / 2.0, 0);
-		this.firstJoint = new MechanismLigament2d("first joint", firstJointLengthMeters, 0);
-		this.secondJoint = new MechanismLigament2d("second joint", secondJointLengthMeters, 0, DEFAULT_LINE_WIDTH, new Color8Bit(Color.kPurple));
+		this.elbow = new MechanismLigament2d("elbow", elbowLengthMeters, 0);
+		this.wrist = new MechanismLigament2d("wrist", wristLengthMeters, 0, DEFAULT_LINE_WIDTH, new Color8Bit(Color.kPurple));
 		this.targetPosition = mechanism.getRoot(name + " TargetPosition", 0, 0);
 
-		firstJoint.append(secondJoint);
-		root.append(firstJoint);
+		elbow.append(wrist);
+		root.append(elbow);
 		targetPosition.append(TARGET_POSITION_MARK);
 
 		showTargetPosition(false);
@@ -53,8 +53,8 @@ public class DoubleJointedArmVisualizer {
 	}
 
 	public void setAngles(Rotation2d firstJointAngle, Rotation2d secondJointAngle) {
-		firstJoint.setAngle(firstJointAngle);
-		secondJoint.setAngle(toFloorRelative(firstJointAngle, secondJointAngle));
+		elbow.setAngle(firstJointAngle);
+		wrist.setAngle(toFloorRelative(firstJointAngle, secondJointAngle));
 	}
 
 	public void setTargetPositionMeters(Translation2d positionMeters) {
@@ -84,9 +84,9 @@ public class DoubleJointedArmVisualizer {
 			);
 			MechanismLigament2d mark = new MechanismLigament2d(
 				pathCounter + ", " + i + " mark",
-				0.01,
 				0,
-				10.0F,
+				0,
+				DEFAULT_LINE_WIDTH,
 				new Color8Bit(Color.kBlueViolet)
 			);
 			pathVisualize.add(mark);

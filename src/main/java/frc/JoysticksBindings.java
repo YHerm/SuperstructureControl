@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.joysticks.JoystickPorts;
 import frc.joysticks.SmartJoystick;
 import frc.robot.Robot;
-import frc.robot.structures.doublejointedarm.FollowTrajectoryDemo;
+import frc.robot.structures.FollowTrajectoryDemo;
 
 
 public class JoysticksBindings {

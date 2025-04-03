@@ -1,6 +1,5 @@
 package frc.robot.structures.doublejointedarm;
 
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
@@ -8,31 +7,35 @@ import java.util.Optional;
 
 public class DoubleJointedArmKinematics {
 
-	public static Translation2d toPositionMeters(ArmAngles angles, double firstJointLengthMeters, double secondJointLengthMeters) {
+	public static Translation2d toPositionMeters(ArmAngles angles, double elbowLengthMeters, double wristLengthMeters) {
 		return new Translation2d(
-			firstJointLengthMeters * angles.firstJoint().getCos() + secondJointLengthMeters * angles.secondJoint().getCos(),
-			firstJointLengthMeters * angles.firstJoint().getSin() + secondJointLengthMeters * angles.secondJoint().getSin()
+			elbowLengthMeters * angles.elbowAngle().getCos() + wristLengthMeters * angles.wristAngle().getCos(),
+			elbowLengthMeters * angles.elbowAngle().getSin() + wristLengthMeters * angles.wristAngle().getSin()
 		);
 	}
-	
-	public static Optional<ArmAngles> toAngles(Translation2d positionMeters, double firstJointLengthMeters, double secondJointLengthMeters, boolean elbowLeft) {
+
+	public static Optional<ArmAngles> toAngles(
+		Translation2d positionMeters,
+		double elbowLengthMeters,
+		double wristLengthMeters,
+		boolean isElbowLeft
+	) {
 		double x = positionMeters.getX();
 		double y = positionMeters.getY();
 
-		Optional<Rotation2d> theta2Optional = cosineLaw(Math.sqrt(x * x + y * y), firstJointLengthMeters, secondJointLengthMeters);
-		if (theta2Optional.isEmpty()) {
+		Optional<Rotation2d> wristAngleOptional = cosineLaw(Math.sqrt(x * x + y * y), elbowLengthMeters, wristLengthMeters);
+		if (wristAngleOptional.isEmpty()) {
 			return Optional.empty();
 		}
-		
-		double wristAngleRads = theta2Optional.get().getRadians();
 
-		if (elbowLeft) {
+		double wristAngleRads = wristAngleOptional.get().getRadians();
+
+		if (isElbowLeft) {
 			wristAngleRads = -wristAngleRads;
 		}
 
 		double elbowAngleRads = Math.atan2(y, x)
-				- Math
-				.atan2(secondJointLengthMeters * Math.sin(wristAngleRads), firstJointLengthMeters + secondJointLengthMeters * Math.cos(wristAngleRads));
+			- Math.atan2(wristLengthMeters * Math.sin(wristAngleRads), elbowLengthMeters + wristLengthMeters * Math.cos(wristAngleRads));
 
 		return Optional.of(new ArmAngles(Rotation2d.fromRadians(elbowAngleRads), Rotation2d.fromRadians(elbowAngleRads + wristAngleRads)));
 	}
