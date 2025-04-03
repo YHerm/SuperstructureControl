@@ -1,4 +1,4 @@
-package frc.robot.visualizers;
+package frc.robot.structures.doublejointedarm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,6 +26,8 @@ public class DoubleJointedArmVisualizer {
 	private final MechanismLigament2d secondJoint;
 	private final MechanismRoot2d targetPosition;
 	private final ArrayList<ArrayList<MechanismLigament2d>> paths = new ArrayList<>();
+
+	private int pathCounter = 0;
 
 	public DoubleJointedArmVisualizer(
 		String name,
@@ -65,15 +67,23 @@ public class DoubleJointedArmVisualizer {
 	}
 
 	public void showPath(List<Trajectory.State> path) {
+		if (!paths.isEmpty()) {
+			for (int i = 0; i < paths.get(0).size(); i++) {
+				paths.get(0).get(i).setLineWeight(0);
+				paths.get(0).get(i).close();
+			}
+			paths.remove(0);
+		}
+
 		ArrayList<MechanismLigament2d> pathVisualize = new ArrayList<>(path.size());
 		for (int i = 0; i < path.size(); i++) {
 			MechanismRoot2d root = mechanism.getRoot(
-				paths.size() + ", " + i,
+				pathCounter + ", " + i,
 				path.get(i).poseMeters.getX() + armRootPosition.getX(),
 				path.get(i).poseMeters.getY() + armRootPosition.getY()
 			);
 			MechanismLigament2d mark = new MechanismLigament2d(
-				paths.size() + ", " + i + " mark",
+				pathCounter + ", " + i + " mark",
 				0.01,
 				0,
 				10.0F,
@@ -82,12 +92,8 @@ public class DoubleJointedArmVisualizer {
 			pathVisualize.add(mark);
 			root.append(mark);
 		}
-		if (!paths.isEmpty()) {
-			for (int i = 0; i < paths.get(paths.size() - 1).size(); i++) {
-				paths.get(paths.size() - 1).get(i).setLineWeight(0);
-			}
-		}
 		paths.add(pathVisualize);
+		pathCounter++;
 	}
 
 	private static Rotation2d toFloorRelative(Rotation2d floorRelativeAngle, Rotation2d jointRelativeAngle) {

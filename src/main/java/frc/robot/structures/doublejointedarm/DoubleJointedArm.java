@@ -1,10 +1,11 @@
-package frc.robot.subsystems;
+package frc.robot.structures.doublejointedarm;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.joysticks.SmartJoystick;
+import frc.robot.subsystems.GBSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class DoubleJointedArm extends GBSubsystem {

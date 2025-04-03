@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.RobotManager;
 import frc.robot.hardware.phoenix6.BusChain;
-import frc.robot.subsystems.DoubleJointedArm;
-import frc.robot.visualizers.DoubleJointedArmVisualizer;
+import frc.robot.structures.doublejointedarm.DoubleJointedArm;
+import frc.robot.structures.doublejointedarm.DoubleJointedArmVisualizer;
 import frc.utils.battery.BatteryUtil;
 
 import java.util.List;
