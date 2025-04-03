@@ -1,9 +1,14 @@
 package frc.robot.structures.doublejointedarm;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.joysticks.Axis;
@@ -14,13 +19,16 @@ import frc.robot.subsystems.GBSubsystem;
 import frc.utils.alerts.Alert;
 import org.littletonrobotics.junction.Logger;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class DoubleJointedArm extends GBSubsystem {
 
 	public static final double ELBOW_LENGTH_METERS = 0.8;
 	public static final double WRIST_LENGTH_METERS = 0.5;
-	public static final double TOTAL_LENGTH_METERS = ELBOW_LENGTH_METERS + WRIST_LENGTH_METERS;
+	public static final double MAX_LENGTH_METERS = ELBOW_LENGTH_METERS + WRIST_LENGTH_METERS;
+	public static final double MIN_LENGTH_METERS = ELBOW_LENGTH_METERS - WRIST_LENGTH_METERS;
 	public static final Rotation2d SWITCH_DIRECTION_TOLERANCE = Rotation2d.fromDegrees(3);
 
 	private Rotation2d elbowAngle = new Rotation2d();
@@ -114,10 +122,10 @@ public class DoubleJointedArm extends GBSubsystem {
 	}
 
 	public void applyTestBinds(SmartJoystick joystick) {
-		joystick.A.onTrue(new InstantCommand(() -> setAngles(Rotation2d.fromDegrees(140), Rotation2d.fromDegrees(195))));
-		joystick.B.onTrue(new InstantCommand(() -> setAngles(Rotation2d.fromDegrees(50), Rotation2d.fromDegrees(-45))));
-		joystick.X.onTrue(new InstantCommand(() -> setAngles(Rotation2d.fromDegrees(150), Rotation2d.fromDegrees(75))));
-		joystick.Y.onTrue(new InstantCommand(() -> setAngles(Rotation2d.fromDegrees(75), Rotation2d.fromDegrees(120))));
+		joystick.A.onTrue(moveToPosition(new Translation2d(-0.5, 0.5)));
+		joystick.B.onTrue(moveToPosition(new Translation2d(-0.08, 1.2)));
+		joystick.X.onTrue(moveToPosition(new Translation2d(0.4, 0.1)));
+		joystick.Y.onTrue(moveToPosition(new Translation2d(0.8, 0.3)));
 
 		joystick.POV_DOWN
 			.onTrue(new InstantCommand(() -> setPosition(toPositionMeters(Rotation2d.fromDegrees(140), Rotation2d.fromDegrees(195)), false)));
@@ -146,5 +154,32 @@ public class DoubleJointedArm extends GBSubsystem {
 		joystick.BACK.onTrue(new InstantCommand(() -> setPosition(new Translation2d(0, 1), true)));
 	}
 
+	public Command moveToPosition(Translation2d targetPosition) {
+		return new DeferredCommand(() -> {
+			Translation2d currentPose = getPositionMeters();
+			Rotation2d angle = targetPosition.minus(currentPose).getAngle();
+			List<Translation2d> midPoints = List.of();
+			if (currentPose.getX() * targetPosition.getX() < 0) {
+				double x = (targetPosition.getX() + currentPose.getX()) / 2;
+				double y = (targetPosition.getY() + currentPose.getY()) / 2;
+				Rotation2d midAngle = Rotation2d.fromRadians(Math.atan2(y, x));
+				double magnitude = Math.sqrt(x*x + y*y) > DoubleJointedArm.ELBOW_LENGTH_METERS ? MAX_LENGTH_METERS : MIN_LENGTH_METERS;
+				midPoints = List.of(new Translation2d(magnitude * midAngle.getCos(), magnitude * midAngle.getSin()));
+			}
+			if (currentPose.minus(targetPosition).getNorm() < 0.01) {
+				return new InstantCommand();
+			}
+			Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+				new Pose2d(currentPose, angle),
+				midPoints,
+				new Pose2d(targetPosition, angle),
+				DEFAULT_TRAJECTORY_CONFIG
+			);
+			setCurrentTrajectory(trajectory);
+			return new FollowTrajectoryDemo(trajectory, (position) -> setPosition(position, targetPosition));
+		}, Set.of(this));
+	}
+
+	public static final TrajectoryConfig DEFAULT_TRAJECTORY_CONFIG = new TrajectoryConfig(2, 2);
 
 }
