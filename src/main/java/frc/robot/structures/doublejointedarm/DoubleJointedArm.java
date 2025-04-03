@@ -3,8 +3,13 @@ package frc.robot.structures.doublejointedarm;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.joysticks.Axis;
 import frc.joysticks.SmartJoystick;
+import frc.robot.Robot;
+import frc.robot.structures.FollowTrajectoryDemo;
 import frc.robot.subsystems.GBSubsystem;
 import frc.utils.alerts.Alert;
 import org.littletonrobotics.junction.Logger;
@@ -20,9 +25,26 @@ public class DoubleJointedArm extends GBSubsystem {
 
 	private Rotation2d elbowAngle = new Rotation2d();
 	private Rotation2d wristAngle = new Rotation2d();
+	private Trajectory currentTrajectory = null;
+	private boolean hasTrajectoryChanged = false;
 
 	public DoubleJointedArm(String logPath) {
 		super(logPath);
+	}
+
+	public boolean hasTrajectoryChanged() {
+		boolean check = hasTrajectoryChanged;
+		hasTrajectoryChanged = false;
+		return check;
+	}
+
+	public Trajectory getCurrentTrajectory() {
+		return currentTrajectory;
+	}
+
+	public void setCurrentTrajectory(Trajectory currentTrajectory) {
+		hasTrajectoryChanged = true;
+		this.currentTrajectory = currentTrajectory;
 	}
 
 	@Override
@@ -101,6 +123,23 @@ public class DoubleJointedArm extends GBSubsystem {
 			.onTrue(new InstantCommand(() -> setPosition(toPositionMeters(Rotation2d.fromDegrees(150), Rotation2d.fromDegrees(75)), true)));
 		joystick.POV_UP
 			.onTrue(new InstantCommand(() -> setPosition(toPositionMeters(Rotation2d.fromDegrees(75), Rotation2d.fromDegrees(120)), false)));
+
+		joystick.R1.onTrue(
+			new InstantCommand(() -> setCurrentTrajectory(Robot.pathDown)).andThen(new WaitCommand(0.3))
+				.andThen(new FollowTrajectoryDemo(Robot.pathDown, this::setPosition))
+		);
+		joystick.getAxisAsButton(Axis.LEFT_TRIGGER)
+			.onTrue(
+				new InstantCommand(() -> setCurrentTrajectory(Robot.pathLeft)).andThen(new WaitCommand(0.3))
+					.andThen(new FollowTrajectoryDemo(Robot.pathLeft, this::setPosition))
+			);
+		joystick.L1.onTrue(
+			new InstantCommand(() -> setCurrentTrajectory(Robot.pathUp)).andThen(new WaitCommand(0.3))
+				.andThen(new FollowTrajectoryDemo(Robot.pathUp, this::setPosition))
+		);
+
+		joystick.START.onTrue(new InstantCommand(() -> setPosition(new Translation2d(0, 1), false)));
+		joystick.BACK.onTrue(new InstantCommand(() -> setPosition(new Translation2d(0, 1), true)));
 	}
 
 

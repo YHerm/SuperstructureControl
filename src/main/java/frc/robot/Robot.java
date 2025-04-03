@@ -73,6 +73,9 @@ public class Robot {
 
 		armVisualizer.setAngles(arm.getElbowAngle(), arm.getWristAngle());
 		armVisualizer.setTargetPositionMeters(arm.getPositionMeters());
+		if (arm.hasTrajectoryChanged()) {
+			armVisualizer.showPath(arm.getCurrentTrajectory().getStates());
+		}
 
 		CommandScheduler.getInstance().run(); // Should be last
 	}
