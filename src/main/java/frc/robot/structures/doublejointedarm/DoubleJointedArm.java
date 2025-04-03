@@ -89,16 +89,20 @@ public class DoubleJointedArm extends GBSubsystem {
 	}
 
 	public void setPosition(Translation2d positionMeters) {
-		setPosition(positionMeters, isElbowLeft(positionMeters));
+		setPosition(positionMeters, isElbowLeft(positionMeters, positionMeters.getX() > 0));
 	}
 
-	private boolean isElbowLeft(Translation2d positionMeters) {
+	public void setPosition(Translation2d positionMeters, Translation2d targetPositionMeters) {
+		setPosition(positionMeters, isElbowLeft(positionMeters, targetPositionMeters.getX() > 0));
+	}
+
+	private boolean isElbowLeft(Translation2d positionMeters, boolean autoPick) {
 		double elbowRads = getElbowAngle().getRadians();
 		double positionRads = positionMeters.getAngle().getRadians();
 		double distanceFromStraightLineRads = Math.abs(MathUtil.angleModulus(elbowRads - positionRads));
 
 		boolean isLettingAutoPick = distanceFromStraightLineRads < SWITCH_DIRECTION_TOLERANCE.getRadians();
-		return isLettingAutoPick ? positionMeters.getX() > 0 : elbowRads > positionRads;
+		return isLettingAutoPick ? autoPick : elbowRads > positionRads;
 	}
 
 	private Optional<ArmAngles> toAngles(Translation2d positionMeters, boolean isElbowLeft) {
