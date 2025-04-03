@@ -66,21 +66,8 @@ public class DoubleJointedArm extends GBSubsystem {
 		setAngles(targetAngles.get().elbowAngle(), targetAngles.get().wristAngle());
 	}
 
-	private Optional<ArmAngles> toAngles(Translation2d positionMeters, boolean isElbowLeft) {
-		return DoubleJointedArmKinematics.toAngles(positionMeters, ELBOW_LENGTH_METERS, WRIST_LENGTH_METERS, isElbowLeft);
-	}
-
 	public void setPosition(Translation2d positionMeters) {
-		Optional<ArmAngles> targetAngles = toAngles(positionMeters);
-		if (targetAngles.isEmpty()) {
-			new Alert(Alert.AlertType.ERROR, getLogPath() + "unreachable position").report();
-			return;
-		}
-		setAngles(targetAngles.get().elbowAngle(), targetAngles.get().wristAngle());
-	}
-
-	private Optional<ArmAngles> toAngles(Translation2d positionMeters) {
-		return DoubleJointedArmKinematics.toAngles(positionMeters, ELBOW_LENGTH_METERS, WRIST_LENGTH_METERS, isElbowLeft(positionMeters));
+		setPosition(positionMeters, isElbowLeft(positionMeters));
 	}
 
 	private boolean isElbowLeft(Translation2d positionMeters) {
@@ -92,7 +79,11 @@ public class DoubleJointedArm extends GBSubsystem {
 		return isLettingAutoPick ? positionMeters.getX() > 0 : elbowRads > positionRads;
 	}
 
-	private static Translation2d toPositionMeters(Rotation2d elbowAngle, Rotation2d wristAngle) {
+	private Optional<ArmAngles> toAngles(Translation2d positionMeters, boolean isElbowLeft) {
+		return DoubleJointedArmKinematics.toAngles(positionMeters, ELBOW_LENGTH_METERS, WRIST_LENGTH_METERS, isElbowLeft);
+	}
+
+	private Translation2d toPositionMeters(Rotation2d elbowAngle, Rotation2d wristAngle) {
 		return DoubleJointedArmKinematics.toPositionMeters(new ArmAngles(elbowAngle, wristAngle), ELBOW_LENGTH_METERS, WRIST_LENGTH_METERS);
 	}
 
