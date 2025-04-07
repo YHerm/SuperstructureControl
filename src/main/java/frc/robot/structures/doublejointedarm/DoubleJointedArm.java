@@ -163,18 +163,14 @@ public class DoubleJointedArm extends GBSubsystem {
 				double x = (targetPosition.getX() + currentPose.getX()) / 2;
 				double y = (targetPosition.getY() + currentPose.getY()) / 2;
 				Rotation2d midAngle = Rotation2d.fromRadians(Math.atan2(y, x));
-				double magnitude = Math.sqrt(x*x + y*y) > DoubleJointedArm.ELBOW_LENGTH_METERS ? MAX_LENGTH_METERS : MIN_LENGTH_METERS;
+				double magnitude = Math.sqrt(x * x + y * y) > DoubleJointedArm.ELBOW_LENGTH_METERS ? MAX_LENGTH_METERS : MIN_LENGTH_METERS;
 				midPoints = List.of(new Translation2d(magnitude * midAngle.getCos(), magnitude * midAngle.getSin()));
 			}
 			if (currentPose.minus(targetPosition).getNorm() < 0.01) {
 				return new InstantCommand();
 			}
-			Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-				new Pose2d(currentPose, angle),
-				midPoints,
-				new Pose2d(targetPosition, angle),
-				DEFAULT_TRAJECTORY_CONFIG
-			);
+			Trajectory trajectory = TrajectoryGenerator
+				.generateTrajectory(new Pose2d(currentPose, angle), midPoints, new Pose2d(targetPosition, angle), DEFAULT_TRAJECTORY_CONFIG);
 			setCurrentTrajectory(trajectory);
 			return new FollowTrajectoryDemo(trajectory, (position) -> setPosition(position, targetPosition));
 		}, Set.of(this));
